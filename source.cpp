@@ -3,7 +3,6 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <algorithm> // For trim function
 
 using namespace std;
 
@@ -18,11 +17,12 @@ string trim(const string& str) {
 struct STUDENT_DATA {
     string firstName;
     string lastName;
+    string email;  // Email field for pre-release mode
 };
 
 int main() {
     vector<STUDENT_DATA> students;  // Vector to store student data
-    ifstream inputFile("StudentData.txt"); 
+    ifstream inputFile("StudentData.txt");
     string line;
 
     // Check if the file is open
@@ -41,20 +41,51 @@ int main() {
                 students.push_back(student);
             }
         }
-        inputFile.close();
+        inputFile.close();  // Close the file
     }
     else {
         cerr << "Error: Unable to open file." << endl;  // Error handling
         return 1;
     }
 
-    // Debug printing - Only in DEBUG mode
-#ifdef _DEBUG
-    cout << "DEBUG MODE: Printing student data" << endl;
-    for (const auto& student : students) {
-        cout << "First Name: " << student.firstName << " | Last Name: " << student.lastName << endl;
+    // Pre-release functionality - Print only email addresses
+#ifdef PRE_RELEASE
+    ifstream emailFile("StudentData_Emails.txt");
+    if (emailFile.is_open()) {
+        cout << "Pre-Release Mode: Printing only email addresses" << endl;
+        while (getline(emailFile, line)) {
+            istringstream emailStream(line);
+            string firstName, lastName, email;
+
+            // Split by comma and extract the email
+            if (getline(emailStream, firstName, ',') &&
+                getline(emailStream, lastName, ',') &&
+                getline(emailStream, email)) {
+
+                STUDENT_DATA student;
+                student.firstName = trim(firstName); 
+                student.lastName = trim(lastName);    
+                student.email = trim(email);
+
+                // Add the student to the vector
+                students.push_back(student);
+            }
+        }
+        emailFile.close();
+
+        // Print the student data along with email
+        cout << "Pre-Release Mode: Printing student data with email" << endl;
+        for (const auto& student : students) {
+            cout << "First Name: " << student.firstName << " | Last Name: " << student.lastName
+                << " | Email: " << student.email << endl;
+}
+    }
+    else {
+        cerr << "Error: Unable to open email file." << endl;
     }
 #endif
 
-    return 1; // Basic main function that returns 1
+    return 0;  // Return statement
 }
+
+
