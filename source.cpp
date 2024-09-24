@@ -59,7 +59,7 @@ int main() {
 #ifdef PRE_RELEASE
     ifstream emailFile("StudentData_Emails.txt");
     if (emailFile.is_open()) {
-        cout << "Pre-Release Mode: Printing only email addresses" << endl;
+        cout << "Pre-Release Mode: Printing student data with email" << endl;
         int i = 0;  // Use an index to assign emails to the correct students
         while (getline(emailFile, line)) {
             istringstream emailStream(line);
@@ -78,7 +78,6 @@ int main() {
         emailFile.close();
 
         // Print the student data along with email
-        cout << "Pre-Release Mode: Printing student data with email" << endl;
         for (const auto& student : students) {
             cout << "First Name: " << student.firstName << " | Last Name: " << student.lastName
                 << " | Email: " << student.email << endl;
