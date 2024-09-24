@@ -48,11 +48,19 @@ int main() {
         return 1;
     }
 
-    // Pre-release functionality - Print only email addresses
+#ifdef _DEBUG
+    cout << "DEBUG MODE: Printing student data" << endl;
+    for (const auto& student : students) {
+        cout << "First Name: " << student.firstName << " | Last Name: " << student.lastName << endl;
+    }
+#endif
+
+    // Pre-release functionality - Assign emails to existing students
 #ifdef PRE_RELEASE
     ifstream emailFile("StudentData_Emails.txt");
     if (emailFile.is_open()) {
         cout << "Pre-Release Mode: Printing only email addresses" << endl;
+        int i = 0;  // Use an index to assign emails to the correct students
         while (getline(emailFile, line)) {
             istringstream emailStream(line);
             string firstName, lastName, email;
@@ -61,14 +69,10 @@ int main() {
             if (getline(emailStream, firstName, ',') &&
                 getline(emailStream, lastName, ',') &&
                 getline(emailStream, email)) {
-
-                STUDENT_DATA student;
-                student.firstName = trim(firstName); 
-                student.lastName = trim(lastName);    
-                student.email = trim(email);
-
-                // Add the student to the vector
-                students.push_back(student);
+                if (i < students.size()) {
+                    students[i].email = trim(email);  // Assign the email to the correct student
+                }
+                i++;  // Move to the next student
             }
         }
         emailFile.close();
@@ -78,7 +82,7 @@ int main() {
         for (const auto& student : students) {
             cout << "First Name: " << student.firstName << " | Last Name: " << student.lastName
                 << " | Email: " << student.email << endl;
-}
+        }
     }
     else {
         cerr << "Error: Unable to open email file." << endl;
@@ -87,5 +91,3 @@ int main() {
 
     return 0;  // Return statement
 }
-
-
